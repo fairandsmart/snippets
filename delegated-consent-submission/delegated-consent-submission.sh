@@ -132,6 +132,12 @@ TX_STATE=$(curl --silent --show-error --fail \
     | jq -r .state)
 echo "$TX_STATE"
 
+echo -n "getting receipt receipt-$TX_ID.pdf for transaction $TX_ID ... "
+curl --silent --show-error --fail \
+    --header "Authorization: Bearer ${TOKEN}" \
+    --output "receipt-$TX_ID.pdf" \
+    "https://$API_CM_SERVER/receipts/${TX_ID}?format=application/pdf&theme=theme.001"
+
 echo -n "getting valid processing $TX_PROCESSING value for subject $TX_SUBJECT ... "
 RECEIVED_CHOICE=$(curl --silent --show-error --fail \
     --header "Authorization: Bearer $TOKEN" \
