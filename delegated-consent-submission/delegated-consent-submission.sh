@@ -124,11 +124,11 @@ curl --silent --show-error --fail \
     "$TX_TASK?t=$TX_TOKEN"
 echo OK
 
-echo -n "getting task state for transaction $TX_ID... "
+echo -n "getting task state for transaction $TX_ID ... "
 TX_STATE=$(curl --silent --show-error --fail \
     --header "Authorization: Bearer ${TOKEN}" \
     --header "Accept: application/json" \
-    https://$API_CM_SERVER/consents/${TX_ID} \
+    "https://$API_CM_SERVER/consents/${TX_ID}" \
     | jq -r .state)
 echo "$TX_STATE"
 
