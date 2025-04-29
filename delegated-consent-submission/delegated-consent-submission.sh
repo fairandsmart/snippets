@@ -9,6 +9,7 @@
 set -eEuo pipefail
 
 # debug if wanted
+DEBUG=${DEBUG:-}
 [[ -n "$DEBUG" ]] && set -x
 
 # error handler
