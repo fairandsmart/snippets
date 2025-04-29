@@ -65,7 +65,7 @@ TX_PAYLOAD=$(cat <<- EOM
         "cancelText": "",
         "footerOnTop": false
     }
-}'
+}
 EOM
 )
 
