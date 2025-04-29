@@ -14,7 +14,7 @@ DEBUG=${DEBUG:-}
 
 # show payloads ?
 SHOW_PAYLOADS=${SHOW_PAYLOADS:-}
- 
+
 # error handler
 trap 'echo FAIL: got error code $? on line $BASH_LINENO, cmd : $BASH_COMMAND ' ERR
 
@@ -34,7 +34,7 @@ SUBJECT_VALUE=${SUBJECT_VALUE:-$RANDOM}
 # transaction context; for layoutData, see head to Collection // Quick Editor
 TX_SUBJECT=${TX_SUBJECT:-testuser@demo.com}
 TX_OBJECT=${TX_OBJECT:-testing}
-TX_PAYLOAD=$(cat <<- EOM
+TX_CONTEXT=$(cat <<- EOM
 {
     "subject": "$TX_SUBJECT",
     "origin": "OPERATOR",
@@ -83,14 +83,14 @@ TOKEN=$(curl --silent --show-error --fail \
     | jq -r '.access_token')
 echo OK
 
-[[ -n "$SHOW_PAYLOADS" ]] && (echo context payload:; echo $TX_PAYLOAD | jq -r; echo)
+[[ -n "$SHOW_PAYLOADS" ]] && (echo context payload:; echo $TX_CONTEXT | jq -r; echo)
 
 echo -n "creating transaction ... "
 RES=$(curl --silent --show-error --fail \
     --header "Content-Type: application/json" \
     --header "Authorization: Bearer $TOKEN" \
     --request POST \
-    --data "$TX_PAYLOAD" \
+    --data "$TX_CONTEXT" \
     "https://$API_CM_SERVER/consents")
 TX_ID=$(echo $RES | jq -r .id)
 TX_TOKEN=$(echo $RES | jq -r .token)
