@@ -12,6 +12,9 @@ set -eEuo pipefail
 DEBUG=${DEBUG:-}
 [[ -n "$DEBUG" ]] && set -x
 
+# show payloads ?
+SHOW_PAYLOADS=${SHOW_PAYLOADS:-}
+ 
 # error handler
 trap 'echo FAIL: got error code $? on line $BASH_LINENO, cmd : $BASH_COMMAND ' ERR
 
@@ -80,6 +83,8 @@ TOKEN=$(curl --silent --show-error --fail \
     | jq -r '.access_token')
 echo OK
 
+[[ -n "$SHOW_PAYLOADS" ]] && (echo context payload:; echo $TX_PAYLOAD | jq -r; echo)
+
 echo -n "creating transaction ... "
 RES=$(curl --silent --show-error --fail \
     --header "Content-Type: application/json" \
@@ -106,6 +111,8 @@ TX_FORM=$(curl --silent --show-error --fail \
     "$TX_TASK?t=$TX_TOKEN")
 echo OK
 
+[[ -n "$SHOW_PAYLOADS" ]] && (echo form payload:; echo $TX_FORM | jq -r; echo)
+
 echo -n "getting processing for form ... "
 TX_PROCESSING_ID=$(echo "$TX_FORM" | jq -r '.blocs[] | select (.parent.element.entry.key | contains("'$TX_PROCESSING'") ) .parent.identifier')
 echo "$TX_PROCESSING_ID"
@@ -115,6 +122,9 @@ TX_PREFERENCE_ID=$(echo "$TX_FORM" | jq -r '.blocs[] | select (.parent.element.e
 echo "$TX_PREFERENCE_ID"
 
 FORM_VALUES='{"'$TX_PROCESSING_ID'":["'$SUBJECT_CHOICE'"], "'$TX_PREFERENCE_ID'":["'$SUBJECT_VALUE'"]}'
+
+[[ -n "$SHOW_PAYLOADS" ]] && (echo values payload:; echo $FORM_VALUES | jq -r; echo)
+
 echo -n "posting answers $SUBJECT_CHOICE for $TX_PROCESSING_ID and $SUBJECT_VALUE for $TX_PREFERENCE_ID ... "
 curl --silent --show-error --fail \
     --header "Authorization: Bearer ${TOKEN}" \
@@ -129,9 +139,10 @@ echo -n "getting task state for transaction $TX_ID ... "
 TX_STATE=$(curl --silent --show-error --fail \
     --header "Authorization: Bearer ${TOKEN}" \
     --header "Accept: application/json" \
-    "https://$API_CM_SERVER/consents/${TX_ID}" \
-    | jq -r .state)
-echo "$TX_STATE"
+    "https://$API_CM_SERVER/consents/${TX_ID}")
+echo "$TX_STATE" | jq -r .state
+
+[[ -n "$SHOW_PAYLOADS" ]] && (echo result payload:; echo $TX_STATE | jq -r; echo)
 
 echo -n "getting receipt receipt-$TX_ID.pdf for transaction $TX_ID ... "
 curl --silent --show-error --fail \

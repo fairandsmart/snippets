@@ -14,6 +14,7 @@ For this specific case we submit the subject choices also through the API ("subm
 
 Available environment variables :
 * DEBUG: activate -x on bash for debug purpose if set
+* SHOW_PAYLOAD: display context / transaction / values payload
 * API_USER: your API login, detault is *admin*
 * API_PASSWORD: your API password, detault is *password*
 * API_AUTH_SERVER: your auth server, detault is *auth.fairandsmart.com*
